@@ -15,17 +15,19 @@ var map = po.map()
 
 var accordion,
     contents = $("#contents").ajaxStop(function(){
-
-	accordion = $("#contents").accordion({
+	
+	accordion = $("#contents").show().accordion({
 	    collapsible: true,
-	    active: false
+	    active: true
+	}).effect('slide',{
+	    opacity: 1
 	});
 
     });
 
 $(window).resize(function(){
 
-    $("#map").width( this.innerWidth - contents.width() - 50).height( this.innerHeight );
+    $("#map").width( this.innerWidth - contents.width() - 5).height( this.innerHeight );
     
 }).trigger('resize');
 map.resize();
@@ -74,7 +76,8 @@ function parseItem(item){
 	    var images = data.match(/<img[^<]+/gi), //Preserve reference to image, but remove them to prevent unnecessary loading
 		data = data.replace(/<img[^<]+/gi,''),
 		body = $("<div />").html(data),
-		glink = $('a[href*="maps.google.com"]',body).text(title).clone(),
+		glink = $('a[href*="maps.google.com"]',body)//.text(title)
+		.clone(),
 		userbody = $('#userbody', body).text().replace(/[\s\t][\t\s]+/gm,' ');
 
 	    if( glink.attr('href') ){
@@ -99,9 +102,22 @@ function parseItem(item){
 					var i = index++;
 					if (firstTime) {
 					    firstTime = false;
-					    $('<h3>').append(glink.clone()).appendTo(contents);
-					    contents.append('<div>' + userbody + '</div>');
-					    
+					    //Build accordion elements
+					    //Required dom tree
+					    // h3 > a
+					    // div
+					    var h3 = $('<h3>').append('<a>' + title + '</a>')
+						.appendTo(contents)
+						.data({
+					    	    map  : glink,
+					    	    link : item
+					    	});
+					    contents.append('<div>' + userbody +
+							    '<a target="_blank" href="' + item +
+							    '">Go to craig</a>' +
+							    '</div>');
+					    //I want a nice popup, but I'm too busy to write it
+					    //popup.html( '<a href=' + glink + '>Title</a>').show();
 					    $(this.container()).click(function(){
 						//div.addClass('ui-state-highlight');
 
