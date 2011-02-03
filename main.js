@@ -1,3 +1,6 @@
+(function($, undefined){
+
+
 var po = org.polymaps;
 var map = po.map()
     .container(document.getElementById("map").appendChild(po.svg("svg")))
@@ -46,7 +49,6 @@ $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/nat/roo/',{
 	    return n.href;
 	}),
 	    l = links.length;
-	console.log(l)
 
 	for (var i = 0; i < l; i++) {
 
@@ -102,7 +104,7 @@ function parseItem(item){
 					    
 					    $(this.container()).click(function(){
 						//div.addClass('ui-state-highlight');
-						console.log(i, this, title)
+
 						accordion.accordion('activate',i);
 					    });
 
@@ -115,4 +117,6 @@ function parseItem(item){
 	    }
 	}
     });
-}
+};
+
+})(jQuery);
