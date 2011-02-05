@@ -1,13 +1,18 @@
 <html>
     <head>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/trontastic/jquery-ui.css" />
+	<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 	<style>
+	    document{
+	        font-family: 'Droid Sans', arial. serif;
+	    }
 	    #map{
 	        width: 400px;
 	        height: 400px;
 	        position: fixed;
 	    }
 	    #contents{
+	        clear: right;
 	        font-size: 0.9em;
                 width: 450px;
 	        float: right;
@@ -19,20 +24,36 @@
 	        width: 125px;
 	        height: 75px;
 	    }
+	    form{
+	        height: 10px;
+	    }
+	    #select{
+	        display: block;
+	        float: right;
+	    }
+	    #work{
+	        fill: red;
+	    }
+	    #loading{ display: none; }
 	</style>
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js"></script>
 	<script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.min.js"></script>
 	<script src="https://github.com/simplegeo/polymaps/raw/master/polymaps.js"></script>
     </head>
     <body>
+	<div id="loading" title="Loading">
+	    <p>Craigslist is being scanned...</p>
+	</div>
 	<div id="map">
 	</div>
-	<select id="content">
+	<form>
+	<select id="select">
 	    <option value="nat/apa/">Apartments/Housing</option>
 	    <option value="nat/roo/">Room & Shared</option>
 	    <option value="nat/sub/">Sublets</option>
 	    <option value="nat/hws/">Housing Wanted</option>
 	</select>
+	</form>
 	<div id="contents">
 	</div>
 	<script src="main.js"></script>

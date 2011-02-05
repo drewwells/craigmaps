@@ -13,17 +13,37 @@ var map = po.map()
 		     + "/998/256/{Z}/{X}/{Y}.png")
 	      .hosts(["a.", "b.", "c.", ""])));
 
+    
+
+	var work = po.geoJson()
+	      .features([{
+		  geometry:{
+		      type        : "Point",
+		      coordinates : [-84.211653, 33.977504]
+		  }
+	      }])
+    .id('work');
+
+map.add(work);
+
 var accordion,
+    select = $("#select"),
+    loading = $("#loading").dialog({ disabled: false }).dialog('widget'),
     contents = $("#contents").ajaxStop(function(){
-	
-	accordion = $("#contents").show().accordion({
+	loading.stop(true, true).fadeOut();	
+	accordion = $("#contents").accordion({
 	    collapsible: true,
 	    active: true
 	}).effect('slide',{
 	    opacity: 1
 	});
 
+    }).ajaxStart(function(){
+
+	loading.show().effect('pulsate',{ easing: 'easeOutBack' }, 2500);
+
     });
+
 
 $(window).resize(function(){
 
@@ -31,14 +51,19 @@ $(window).resize(function(){
     
 }).trigger('resize');
 map.resize();
+var index = 0;
+    var layerList = [];
+select.bind('change',function(){
+    var selected = this.value;
+    index = 0;
+    contents.empty().accordion('destroy').hide();
 
-$("#content").bind('change',function(){
-    var index = 0;
-    $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/nat/roo/',{
+    $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/' + selected,{
 	success: function(data){
 	    var doc = data,
-	    a = $("p > a", doc),
-	    $("#contents").empty().append( a.append('<br/>') );
+		a = $("p > a", doc);
+
+	    //.append( a.append('<br/>') );
 	    // popup = $("<div>").css({
 	    // 	width: 200,
 	    // 	height: 200,
@@ -54,6 +79,9 @@ $("#content").bind('change',function(){
 	    }),
 	    l = links.length;
 
+	    while( layerList.length ){
+		map.remove(layerList.pop());
+	    }
 	    for (var i = 0; i < l; i++) {
 
 		parseItem(links[i]);
@@ -62,6 +90,7 @@ $("#content").bind('change',function(){
     });
 
 }).trigger('change');
+
 function parseItem(item){
 
     $.ajax('proxy.php?mode=native&url=' + item,{
@@ -94,7 +123,7 @@ function parseItem(item){
 			    firstTime = true;
 			if( geo.contents.results.length ){
 			    loc = geo.contents.results[0].geometry.location;
-			    map.add(po.geoJson()
+			    var point = po.geoJson()
 				    .features([{
 					geometry:{
 					    type        : "Point",
@@ -129,7 +158,9 @@ function parseItem(item){
 
 					}
 
-				    }));
+				    });
+			    layerList.push(point);
+			    map.add(point);
 			}
 		    }
 		});	
