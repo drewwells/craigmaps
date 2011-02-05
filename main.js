@@ -32,33 +32,36 @@ $(window).resize(function(){
 }).trigger('resize');
 map.resize();
 
-$.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/nat/roo/',{
-    success: function(data){
-	var doc = data,
+$("#content").bind('change',function(){
+    var index = 0;
+    $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/nat/roo/',{
+	success: function(data){
+	    var doc = data,
 	    a = $("p > a", doc),
-	//$("#contents").append( a.append('<br/>') );
-	    popup = $("<div>").css({
-	    width: 200,
-	    height: 200,
-	    display: 'none',
-	    'z-index': 1000,
-	    position: 'absolute',
-	    border: 'solid 1px black',
-	    'background-color': 'white'
-	}).appendTo('body');
+	    $("#contents").empty().append( a.append('<br/>') );
+	    // popup = $("<div>").css({
+	    // 	width: 200,
+	    // 	height: 200,
+	    // 	display: 'none',
+	    // 	'z-index': 1000,
+	    // 	position: 'absolute',
+	    // 	border: 'solid 1px black',
+	    // 	'background-color': 'white'
+	    // }).appendTo('body');
 
-	var links = a.get().map(function(n,i){
-	    return n.href;
-	}),
+	    var links = a.get().map(function(n,i){
+		return n.href;
+	    }),
 	    l = links.length;
 
-	for (var i = 0; i < l; i++) {
+	    for (var i = 0; i < l; i++) {
 
-	    parseItem(links[i]);
+		parseItem(links[i]);
+	    }
 	}
-    }
-});
-var index = 0;
+    });
+
+}).trigger('change');
 function parseItem(item){
 
     $.ajax('proxy.php?mode=native&url=' + item,{
