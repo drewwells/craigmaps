@@ -2,7 +2,7 @@ task :default => 'all'
 
 # openlayers_dir = File.join( lib_dir, 'openlayers' )
 # openlayers = File.join( openlayers_dir, 'readme.md' )
-polymaps = File.join( 'polymaps' )
+polymaps = File.join( 'lib', 'polymaps' )
 
 task :all => [:init] do
   puts "MapQuery build complete."
