@@ -1,31 +1,53 @@
 (function($, undefined){
 
 var index = 0,
-    layerList = [],
-    po = org.polymaps;
-    
-var map = po.map()
-    .container(document.getElementById("map").appendChild(po.svg("svg")))
-    .center({lat: 33.65, lon: -84.42})
-    .zoom(9)
-    .add(po.interact())
-    .add(po.image()
-         .url(po.url("http://{S}tile.cloudmade.com"
-                     + "/1a1b06b230af4efdbb989ea99e9841af" // http://cloudmade.com/register
-                     + "/998/256/{Z}/{X}/{Y}.png")
-              .hosts(["a.", "b.", "c.", ""])));
+    layerList = [];
+    //po = org.polymaps;
+
+var map = new L.Map('map');
+
+// create a CloudMade tile layer
+var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/997/256/{z}/{x}/{y}.png',
+    cloudmadeAttrib = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+    cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttrib});
+
+    var norcross = new L.LatLng( 33.977504, -84.181653);
+    map.setView( norcross, 13 ).addLayer(cloudmade);
+
+    var markerLocation = new L.LatLng( 33.977504, -84.211653 );
+    var marker = new L.Marker( markerLocation );
+        map.addLayer( marker );
+    marker.bindPopup('work');
+
+    $( marker._icon ).hover(function(){
+	marker.openPopup();
+    }, function(){
+	marker.closePopup();
+    });
+
+
+// var map = po.map()
+//     .container(document.getElementById("map").appendChild(po.svg("svg")))
+//     .center({lat: 33.65, lon: -84.42})
+//     .zoom(9)
+//     .add(po.interact())
+//     .add(po.image()
+//          .url(po.url("http://{S}tile.cloudmade.com"
+//                      + "/1a1b06b230af4efdbb989ea99e9841af" // http://cloudmade.com/register
+//                      + "/998/256/{Z}/{X}/{Y}.png")
+//               .hosts(["a.", "b.", "c.", ""])));
 
     
-var work = po.geoJson()
-    .features(
-	[{
-	    geometry:{
-                type        : "Point",
-                coordinates : [-84.211653, 33.977504]
-            }
-        }]).id('work');
+// var work = po.geoJson()
+//     .features(
+// 	[{
+// 	    geometry:{
+//                 type        : "Point",
+//                 coordinates : [-84.211653, 33.977504]
+//             }
+//         }]).id('work');
     
-map.add(work);
+// map.add(work);
 
 
     
@@ -52,7 +74,6 @@ $(window).resize(function(){
 
     $("#map").width( this.innerWidth - contents.width() - 5).height( this.innerHeight );
 }).trigger('resize');
-map.resize();
 
     
 select.bind('change',function(){
@@ -65,17 +86,6 @@ select.bind('change',function(){
             var doc = data,
                 a = $("p > a", doc);
 
-            //.append( a.append('<br/>') );
-            // popup = $("<div>").css({
-            //  width: 200,
-            //  height: 200,
-            //  display: 'none',
-            //  'z-index': 1000,
-            //  position: 'absolute',
-            //  border: 'solid 1px black',
-            //  'background-color': 'white'
-            // }).appendTo('body');
-
             var links = a.get().map(function(n,i){
                 return n.href;
             }),
@@ -86,7 +96,7 @@ select.bind('change',function(){
             }
             for (var i = 0; i < l; i++) {
 
-                parseItem(links[i]);
+                //parseItem(links[i]);
             }
         }
     });
