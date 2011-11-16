@@ -13,17 +13,20 @@ var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841
     cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttrib});
 
     //var norcross = new L.LatLng( 33.977504, -84.181653); Not needed any longer :(
-    var austin = new L.LatLng( 30.265455,-97.742889 );
-    map.setView( austin, 13 ).addLayer(cloudmade);
+    var austin = new L.LatLng( 30.265455, -97.742889 );
+    map.setView( austin, 13 ).addLayer( cloudmade );
 
-    var marker = new L.Marker( new L.LatLng( 30.265455,-97.742889 ) );
-        map.addLayer( marker );
-    marker.bindPopup('work');
+    var circle = new L.Circle(
+        new L.LatLng( 30.265455,-97.742889 ),
+        500,
+        { color: '#f03', opacity: 0.7 });
+    map.addLayer( circle );
+    circle.bindPopup( 'Office' );
 
-    $( marker._icon ).hover(function(){
-	marker.openPopup();
+    $( circle._icon ).hover(function(){
+	circle.openPopup();
     }, function(){
-	marker.closePopup();
+	circle.closePopup();
     });
 
 var accordion,
