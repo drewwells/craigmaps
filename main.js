@@ -1,7 +1,8 @@
 (function($, undefined){
 
 var index = 0,
-    layerList = [];
+    layerList = [],
+    L = window.L;
     //po = org.polymaps;
 
 var map = new L.Map('map');
@@ -11,11 +12,11 @@ var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841
     cloudmadeAttrib = 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
     cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttrib});
 
-    var norcross = new L.LatLng( 33.977504, -84.181653);
-    map.setView( norcross, 13 ).addLayer(cloudmade);
+    //var norcross = new L.LatLng( 33.977504, -84.181653); Not needed any longer :(
+    var austin = new L.LatLng( 30.265455,-97.742889 );
+    map.setView( austin, 13 ).addLayer(cloudmade);
 
-    var markerLocation = new L.LatLng( 33.977504, -84.211653 );
-    var marker = new L.Marker( markerLocation );
+    var marker = new L.Marker( new L.LatLng( 30.265455,-97.742889 ) );
         map.addLayer( marker );
     marker.bindPopup('work');
 
@@ -25,32 +26,6 @@ var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841
 	marker.closePopup();
     });
 
-
-// var map = po.map()
-//     .container(document.getElementById("map").appendChild(po.svg("svg")))
-//     .center({lat: 33.65, lon: -84.42})
-//     .zoom(9)
-//     .add(po.interact())
-//     .add(po.image()
-//          .url(po.url("http://{S}tile.cloudmade.com"
-//                      + "/1a1b06b230af4efdbb989ea99e9841af" // http://cloudmade.com/register
-//                      + "/998/256/{Z}/{X}/{Y}.png")
-//               .hosts(["a.", "b.", "c.", ""])));
-
-    
-// var work = po.geoJson()
-//     .features(
-// 	[{
-// 	    geometry:{
-//                 type        : "Point",
-//                 coordinates : [-84.211653, 33.977504]
-//             }
-//         }]).id('work');
-    
-// map.add(work);
-
-
-    
 var accordion,
     select = $("#select"),
     loading = $("#loading").dialog({ disabled: false, autoheight: false }).dialog('widget'),
@@ -62,6 +37,11 @@ var accordion,
         }).effect('slide',{
             opacity: 1
         }).css('visibility','visible');
+        // .on( 'click', function( event ){
+
+        //     console.log( this, event );
+        //     //contents.parent()[0].scrollTop = Math.floor( ui.newHeader.offset().top );
+        // });
 
     }).ajaxStart(function(){
 
@@ -75,13 +55,14 @@ $(window).resize(function(){
     $("#map").width( this.innerWidth - contents.width() - 5).height( this.innerHeight );
 }).trigger('resize');
 
-    
+
 select.bind('change',function(){
     var selected = this.value;
     index = 0;
     contents.accordion('destroy').empty().css('visibility','hidden');//.hide();
 
-    $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/' + selected,{
+    //$.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/' + selected,{
+    $.ajax('proxy.php?mode=native&url=http://austin.craigslist.org/' + selected,{
         success: function(data){
             var doc = data,
                 a = $("p > a", doc);
@@ -96,7 +77,7 @@ select.bind('change',function(){
             }
             for (var i = 0; i < l; i++) {
 
-                //parseItem(links[i]);
+                parseItem(links[i]);
             }
         }
     });
@@ -107,35 +88,66 @@ function parseItem(item){
 
     $.ajax('proxy.php?mode=native&url=' + item,{
         success: function (data) {
-            var title = data.match(/<title>([^<]+)/),
-                title = title && title.length > 1 ? title[1] : '';
+            var title = data.match(/<title>([^<]+)/);
+            title = title && title.length > 1 ? title[1] : '';
             data = data.replace(/(<link|<script).+/gi,'').match(/<body[\s\S\r\n]+body>/mg);
-            
+
             if( data ){
                 data = data[0];
             } else {
                 return;
             }
-
-            var images = data.match(/<img[^<]+/gi), //Preserve reference to image, but remove them to prevent unnecessary loading
-                data = data.replace(/<img[^<]+/gi,''),
+            data = data.replace(/<img[^<]+/gi,'');
+            //Preserve reference to image, but remove them to prevent unnecessary loading
+            var images = data.match(/<img[^<]+/gi),
                 body = $("<div />").html(data),
-                glink = $('a[href*="maps.google.com"]',body)//.text(title)
-                .clone(),
+                glink = $('a[href*="maps.google.com"]',body)
+                            .clone(),
                 userbody = $('#userbody', body).text().replace(/[\s\t][\t\s]+/gm,' ');
 
             if( glink.attr('href') ){
                 //Address is URI encoded, decode in case of problems
                 var address = glink[0].href.replace('http://maps.google.com/?q=loc%3A+','');
 
-                $.ajax('proxy.php?url=http://maps.googleapis.com/maps/api/geocode/json' + encodeURIComponent('?sensor=true&address=' + address),{
+                $.ajax( 'proxy.php?url=http://maps.googleapis.com/maps/api/geocode/json' +
+                        encodeURIComponent('?sensor=true&address=' + address ),{
                     success: function(geo){
 
-                        var loc,
-                            firstTime = true;
+                        var loc;
+
                         if( geo.contents.results.length ){
                             loc = geo.contents.results[0].geometry.location;
-                            var point = po.geoJson()
+
+                            var point = new L.Marker( new L.LatLng( loc.lat, loc.lng ) );
+                            map.addLayer( point );
+                            point.bindPopup( title );
+
+                            $( point._icon ).hover(function(){
+	                        point.openPopup();
+                            }, function(){
+	                        point.closePopup();
+                            }).on( 'click', function(){
+
+                                accordion.accordion('activate',i);
+                            });
+
+                            var i = index++;
+
+                            var h3 = $( '<h3>' ).append( '<a>' + title + '</a>' )
+                                .appendTo( contents )
+                                .data({
+                                    map : glink,
+                                    link: item
+                                });
+                            contents.append('<div>' + userbody +
+                                            '<a target="_blank" href="' + item +
+                                            '">Go to craig</a>' +
+                                            '</div>');
+                            //I want a nice popup, but I'm too busy to write it
+                            //popup.html( '<a href=' + glink + '>Title</a>').show();
+                            layerList.push( point );
+
+                            /*var point = po.geoJson()
                                     .features([{
                                         geometry:{
                                             type        : "Point",
@@ -172,10 +184,10 @@ function parseItem(item){
 
                                     });
                             layerList.push(point);
-                            map.add(point);
+                            map.add(point);*/
                         }
                     }
-                });     
+                });
             }
         }
     });

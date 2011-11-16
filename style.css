@@ -1,0 +1,45 @@
+document{
+    font-family: 'Droid Sans', arial, serif;
+}
+body{
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+#map{
+    height: 100%;
+}
+#contents{
+    clear: right;
+    font-size: 0.9em;
+    width: 450px;
+    float: right;
+    /*display: none;*/
+    visibility: hidden;
+}
+#popup{
+    display: none;
+    position: absolute;
+    width: 125px;
+    height: 75px;
+}
+#select{
+    display: block;
+    float: right;
+}
+#work{
+    fill: red;
+}
+#loading{ display: none; }
+.ribbon{
+    display: none;
+    z-index: 1000;
+}
+.pane{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    height: 100%;
+    overflow: auto;
+}
