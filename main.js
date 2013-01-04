@@ -13,11 +13,11 @@ var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841
     cloudmade = new L.TileLayer(cloudmadeUrl, {maxZoom: 18, attribution: cloudmadeAttrib});
 
     //var norcross = new L.LatLng( 33.977504, -84.181653); Not needed any longer :(
-    var austin = new L.LatLng( 30.26840798975886, -97.66725540161133 );
-    map.setView( austin, 12 ).addLayer( cloudmade );
+    var center = new L.LatLng( 33.78807, -84.38493 );
+    map.setView( center, 12 ).addLayer( cloudmade );
 
     var circle = new L.Circle(
-        new L.LatLng( 30.265455,-97.742889 ),
+        center,
         500,
         { color: '#f03', opacity: 0.7 });
     map.addLayer( circle );
@@ -28,6 +28,7 @@ var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841
     }, function(){
 	circle.closePopup();
     });
+
 window.map = map;
 var accordion,
     select = $("#select"),
@@ -64,8 +65,8 @@ select.bind('change',function(){
     index = 0;
     contents.accordion('destroy').empty().css('visibility','hidden');//.hide();
 
-    //$.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/' + selected,{
-    $.ajax('proxy.php?mode=native&url=http://austin.craigslist.org/' + selected,{
+    $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/' + selected,{
+    //$.ajax('proxy.php?mode=native&url=http://austin.craigslist.org/' + selected,{
         success: function(data){
             var doc = data,
                 a = $("p > a", doc);
