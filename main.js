@@ -2,10 +2,18 @@
 
 var index = 0,
     layerList = [],
-    L = window.L;
+    L = window.L,
+    $contents = $("#contents");
     //po = org.polymaps;
 
 var map = new L.Map('map');
+
+//Handle window resizing
+$(window).resize(function(){
+
+    $("#map").width( this.innerWidth - contents.width() - 5).height( this.innerHeight );
+})//.trigger('resize');
+
 
 // create a CloudMade tile layer
 var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841af/997/256/{z}/{x}/{y}.png',
@@ -32,8 +40,9 @@ var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/1a1b06b230af4efdbb989ea99e9841
 window.map = map;
 var accordion,
     select = $("#select"),
-    loading = $("#loading").dialog({ disabled: false, autoheight: false }).dialog('widget'),
-    contents = $("#contents").ajaxStop(function(){
+    loading = $("#loading").dialog({ disabled: false, autoheight: false }).dialog('widget');
+
+    $contents.ajaxStop(function(){
         loading.stop(true, true).fadeOut();     //Kill the AJAX dialog
         accordion = $("#contents").accordion({
             collapsible: true,
@@ -53,17 +62,12 @@ var accordion,
 
     });
 
-//Handle window resizing
-$(window).resize(function(){
-
-    $("#map").width( this.innerWidth - contents.width() - 5).height( this.innerHeight );
-}).trigger('resize');
 
 
 select.bind('change',function(){
     var selected = this.value;
     index = 0;
-    contents.accordion('destroy').empty().css('visibility','hidden');//.hide();
+    $contents.accordion('destroy').empty().css('visibility','hidden');//.hide();
 
     $.ajax('proxy.php?mode=native&url=http://atlanta.craigslist.org/' + selected,{
     //$.ajax('proxy.php?mode=native&url=http://austin.craigslist.org/' + selected,{
@@ -138,12 +142,12 @@ function parseItem(item){
                             var i = index++;
 
                             var h3 = $( '<h3>' ).append( '<a>' + title + '</a>' )
-                                .appendTo( contents )
+                                .appendTo( $contents )
                                 .data({
                                     map : glink,
                                     link: item
                                 });
-                            contents.append('<div>' + userbody +
+                            $contents.append('<div>' + userbody +
                                             '<a target="_blank" href="' + item +
                                             '">Go to craig</a>' +
                                             '</div>');
